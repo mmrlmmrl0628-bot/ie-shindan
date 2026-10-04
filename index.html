@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta property="og:type" content="website">
+<meta property="og:title" content="家探しタイプ診断｜あなたはどのおうちタイプ？">
+<meta property="og:description" content="13の質問で、あなたの家探しスタイルを16タイプから診断。株式会社Lim">
+<meta name="twitter:card" content="summary">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>家探しタイプ診断</title>
+<meta name="description" content="13の質問で、あなたの家探しスタイルを16タイプから診断します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: 水色の水玉の上に一列。家のキャラクターが主役で、結果カードはそのままスクショできる縦長ステッカー風 */
+:root{
+  --bg:#eaf7fd;
+  --dot:#c9ecfa;
+  --card:#ffffff;
+  --ink:#2b3a55;
+  --ink-soft:#6c7c96;
+  --sky:#45bde8;
+  --sky-soft:#d8f2fc;
+  --pink:#ff8fb1;
+  --pink-soft:#ffe3ec;
+  --mint:#8fdcc8;
+  --mint-soft:#dcf5ee;
+  --butter:#ffd86e;
+  --butter-soft:#fff4cc;
+  --f-display:"Kiwi Maru","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --f-body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  background-color:var(--bg);
+  background-image:radial-gradient(var(--dot) 1.8px,transparent 1.9px);
+  background-size:22px 22px;
+  color:var(--ink);font-family:var(--f-body);font-weight:500;font-size:15px;line-height:1.85;
+  padding-inline:16px;padding-block:24px 48px;
+  -webkit-font-smoothing:antialiased;word-break:auto-phrase;overflow-wrap:anywhere;
+}
+.stage{max-width:440px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+button{font:inherit;color:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+.screen{display:flex;flex-direction:column;gap:18px}
+
+/* topbar */
+.topbar{display:flex;align-items:center;gap:12px;min-height:28px}
+.back{background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.track{flex:1;height:12px;background:var(--card);border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--sky);border-radius:999px;transition:width .4s ease}
+.step{font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* common */
+.panel{background:var(--card);border:2.5px solid var(--ink);border-radius:26px;box-shadow:0 5px 0 var(--ink)}
+.pill{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:1px 12px;font-size:12px;font-weight:700;background:var(--butter)}
+.btn{display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 12px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card);color:var(--ink);text-decoration:none;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .1s,box-shadow .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.sky{background:var(--sky);color:#fff}
+.btn.pink{background:var(--pink);color:#fff}
+.btn.small{padding:9px 12px;font-size:13.5px;font-weight:700}
+
+/* intro */
+.hero{padding:26px 20px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.cast{display:flex;justify-content:center;align-items:flex-end}
+.cast svg{width:84px;height:84px;margin-inline:-6px}
+.cast svg:nth-child(2),.cast svg:nth-child(3){width:100px;height:100px}
+.hero h1{font-family:var(--f-display);font-weight:500;font-size:clamp(36px,10.5vw,46px);line-height:1.2;margin:0;letter-spacing:.02em;text-wrap:balance}
+.hero h1 span{color:var(--sky)}
+.hero p{margin:0;color:var(--ink-soft);font-size:14.5px}
+.axes{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:4px}
+.axes div{background:var(--sky-soft);border:2px solid var(--ink);border-radius:16px;padding:7px 8px;font-size:12.5px;line-height:1.5;text-align:center}
+.axes b{display:block;font-size:14px;font-weight:900}
+.gift-mini{display:flex;align-items:center;gap:10px;background:var(--butter-soft);border:2px dashed var(--ink);border-radius:18px;padding:10px 14px;text-align:left;font-size:13.5px;line-height:1.6}
+.gift-mini svg{width:40px;height:40px;flex-shrink:0}
+.gift-mini b{color:#ef5d8c;font-size:15px}
+.meta{font-size:12px;color:var(--ink-soft);margin:0;text-align:center}
+
+/* question */
+.qcard{padding:22px 18px 24px;display:flex;flex-direction:column;gap:14px}
+.q-tag{margin:0;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ink-soft);flex-wrap:wrap}
+.q-tag .pill{background:var(--sky);color:#fff}
+.q-text{font-family:var(--f-display);font-weight:500;font-size:clamp(22px,6.2vw,26px);line-height:1.55;margin:0;text-wrap:balance}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;background:var(--card);border:2.5px solid var(--ink);border-radius:18px;padding:12px 14px 12px 52px;font-size:14.5px;font-weight:700;line-height:1.55;cursor:pointer;position:relative;box-shadow:0 3px 0 var(--ink);transition:transform .1s,box-shadow .1s,background .15s}
+.opt::before{content:attr(data-k);position:absolute;left:12px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-size:13px;font-weight:900;background:var(--card)}
+.opt:hover{border-color:var(--sky)}
+.opt:active,.opt.chosen{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+.opt.chosen{background:var(--sky-soft)}
+.opt.chosen::before{background:var(--sky);color:#fff}
+.peek{display:flex;justify-content:center}
+.peek svg{width:88px;height:88px}
+
+/* blood */
+.blood-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bt{border:2.5px solid var(--ink);border-radius:22px;padding:18px 0;font-family:var(--f-display);font-size:30px;line-height:1;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .1s,box-shadow .1s}
+.bt small{font-size:15px;margin-left:2px}
+.bt{background:var(--card)}
+.bt:hover{border-color:var(--sky)}
+.bt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink);background:var(--sky-soft)}
+.skip{background:none;border:0;color:var(--ink-soft);text-decoration:underline;font-size:13.5px;cursor:pointer;padding:6px}
+.blood-head{display:flex;align-items:center;gap:12px}
+.blood-head b{width:56px;height:56px;border-radius:50%;border:2.5px solid var(--ink);background:var(--pink-soft);display:grid;place-items:center;font-family:var(--f-display);font-weight:500;font-size:22px;flex-shrink:0}
+.blood-head p{margin:0;font-weight:700;line-height:1.6}
+.blood-tip{background:var(--bg);border-radius:16px;padding:12px 14px;font-size:14px}
+.blood-tip strong{display:block;font-size:12.5px;color:var(--ink-soft)}
+.r-code:has(.bl[hidden]){display:none}
+.r-code .bl{font-size:16px;letter-spacing:.04em;-webkit-text-stroke:0;color:var(--ink);background:var(--pink-soft);border:2px solid var(--ink);border-radius:999px;padding:0 10px;vertical-align:middle;margin-left:4px}
+
+/* loading */
+.loading{align-items:center;text-align:center;padding-top:60px;gap:14px}
+.loading svg{width:130px;height:130px;animation:hop .7s ease-in-out infinite alternate}
+.loading p{font-family:var(--f-display);font-size:20px;margin:0}
+@keyframes hop{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+
+/* result card (screenshot) */
+.shot-hint{margin:0;text-align:center;font-size:13px;font-weight:700;color:var(--sky)}
+.rcard{overflow:hidden;text-align:center}
+.rcard-top{background:var(--sky);color:#fff;font-weight:900;font-size:13px;letter-spacing:.12em;padding:7px;border-bottom:2.5px solid var(--ink)}
+.rcard-body{padding:16px 18px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(circle at 50% 30%,var(--sky-soft),transparent 62%)}
+.rcard-body svg{width:170px;height:170px}
+.r-code{margin:0;font-family:var(--f-display);font-size:30px;letter-spacing:.14em;line-height:1.2;color:var(--sky);-webkit-text-stroke:1px var(--ink)}
+.r-code small{font-size:14px;letter-spacing:.04em;-webkit-text-stroke:0;color:var(--ink)}
+.r-name{font-family:var(--f-display);font-weight:500;font-size:clamp(26px,7.4vw,32px);line-height:1.3;margin:2px 0 0;text-wrap:balance}
+.r-catch{margin:0;font-size:14px;color:var(--ink-soft);line-height:1.7}
+.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:8px 0 10px}
+.tag{font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--sky-soft);border:1.5px solid var(--ink)}
+.coupon{margin:4px 14px 14px;border:2.5px dashed var(--ink);border-radius:18px;background:var(--butter-soft);padding:10px 12px;display:flex;align-items:center;gap:10px;text-align:left}
+.coupon svg{width:52px;height:52px;flex-shrink:0}
+.coupon p{margin:0;font-size:12.5px;line-height:1.55;font-weight:700}
+.coupon strong{display:block;font-family:var(--f-display);font-weight:500;font-size:20px;color:#ef5d8c;line-height:1.35}
+.rcard-foot{border-top:2px solid var(--ink);padding:6px;font-size:11.5px;font-weight:700;color:var(--ink-soft);letter-spacing:.04em}
+
+/* detail blocks */
+.sec{padding:20px 18px;display:flex;flex-direction:column;gap:10px}
+.sec h3{margin:0;font-family:var(--f-display);font-weight:500;font-size:19px;display:flex;align-items:center;gap:8px}
+.sec h3 i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);flex-shrink:0;background:var(--sky)}
+.sec p{margin:0}
+.spec{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.spec li{display:grid;grid-template-columns:5em 1fr;gap:10px;font-size:14px;padding:6px 10px;border-radius:12px;background:var(--bg)}
+.spec li b{color:var(--ink-soft);font-size:12.5px}
+.pit{background:var(--pink-soft);border-radius:16px;padding:12px 14px;font-size:14.5px}
+
+.letters{display:grid;gap:12px}
+.letter{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}
+.letter > b{width:44px;height:44px;border-radius:14px;border:2px solid var(--ink);display:grid;place-items:center;font-size:20px;font-weight:900;background:var(--sky-soft)}
+.letter:nth-child(2) > b{background:var(--mint-soft)}
+.letter:nth-child(3) > b{background:var(--butter-soft)}
+.letter:nth-child(4) > b{background:var(--pink-soft)}
+.letter > div{min-width:0;font-size:14px;line-height:1.7}
+.letter strong{display:block;font-size:15px}
+.letter span{display:block;color:var(--ink-soft);font-size:13px}
+.meterbar{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;font-size:11.5px;font-weight:900;margin:2px 0 4px}
+.bar{height:12px;border:2px solid var(--ink);border-radius:999px;background:var(--card);position:relative;overflow:hidden}
+.bar i{position:absolute;top:0;bottom:0;background:var(--sky)}
+
+.compat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.compat > div{padding:12px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:0}
+.compat svg{width:70px;height:70px}
+.compat small{font-size:11.5px;font-weight:700;color:var(--ink-soft)}
+.compat strong{font-family:var(--f-display);font-weight:500;font-size:14px;line-height:1.4}
+.compat em{font-style:normal;font-size:12px;font-weight:900;letter-spacing:.08em;color:var(--sky)}
+
+/* consult CTA */
+.consult{background:var(--sky-soft);padding:22px 18px;display:flex;flex-direction:column;gap:14px}
+.consult h3{margin:0;font-family:var(--f-display);font-weight:500;font-size:24px;line-height:1.35;text-align:center;text-wrap:balance}
+.consult h3 span{color:var(--sky);-webkit-text-stroke:.6px var(--ink)}
+.consult ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.consult li{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:10px 12px;font-size:14px;line-height:1.6;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:center}
+.consult li b{width:28px;height:28px;border-radius:50%;background:var(--butter);border:2px solid var(--ink);display:grid;place-items:center;font-size:13px}
+.howto{background:var(--card);border:2.5px dashed var(--ink);border-radius:18px;padding:14px;font-size:14px;text-align:center;display:flex;flex-direction:column;gap:10px}
+.howto p{margin:0}
+.howto strong{color:#ef5d8c}
+.handle{font-family:var(--f-display);font-size:22px;letter-spacing:.02em;user-select:all}
+.ig-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.fine{margin:0;font-size:11.5px;color:var(--ink-soft);line-height:1.7}
+
+.share{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.share .wide{grid-column:1/-1}
+.btn.copied{background:var(--butter)}
+.credit{font-size:11.5px;font-weight:700;letter-spacing:.04em;text-align:center;color:var(--ink-soft);margin:4px 0 0;line-height:1.7}
+
+@media (max-width:370px){.rcard-body svg{width:140px;height:140px}.opt{font-size:13.5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="stage">
+  <div class="topbar" id="topbar" hidden>
+    <button class="back" id="backBtn" type="button">← もどる</button>
+    <div class="track"><i id="trackFill"></i></div>
+    <div class="step" id="stepLabel"></div>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen" id="s-intro">
+    <div class="panel hero">
+      <div class="cast" id="introCast"></div>
+      <span class="pill">13問・約2分</span>
+      <h1>家探し<br><span>タイプ</span>診断</h1>
+      <p>4つの指標であなたの家探しを16タイプに診断。合う家の選び方と、やりがちな失敗がわかる。</p>
+      <button class="btn sky" id="startBtn" type="button" style="width:100%;margin-top:6px">診断をはじめる</button>
+    </div>
+    <div class="gift-mini" id="introGift"></div>
+    <p class="meta">マンション・一戸建ての購入を考えている人向け</p>
+  </section>
+
+  <!-- QUESTION -->
+  <section class="screen" id="s-q" hidden>
+    <div class="peek" id="qPeek"></div>
+    <div class="panel qcard">
+      <p class="q-tag"><span class="pill" id="qNum"></span></p>
+      <p class="q-text" id="qText"></p>
+      <div class="opts" id="qOpts"></div>
+    </div>
+  </section>
+
+  <!-- BLOOD -->
+  <section class="screen" id="s-blood" hidden>
+    <div class="peek" id="bPeek"></div>
+    <div class="panel qcard">
+      <p class="q-tag"><span class="pill">最後</span>血液型で性格診断もプラス</p>
+      <p class="q-text">あなたの血液型は？</p>
+      <div class="blood-grid" id="bloodGrid">
+        <button class="bt" type="button" data-b="A">A<small>型</small></button>
+        <button class="bt" type="button" data-b="B">B<small>型</small></button>
+        <button class="bt" type="button" data-b="O">O<small>型</small></button>
+        <button class="bt" type="button" data-b="AB">AB<small>型</small></button>
+      </div>
+      <button class="skip" id="bloodSkip" type="button">わからない・スキップ</button>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <section class="screen loading" id="s-load" hidden>
+    <div id="loadFig"></div>
+    <p>おうちを探しています…</p>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result" hidden>
+    <p class="shot-hint">↓ このカードをスクショしてね</p>
+
+    <div class="panel rcard">
+      <div class="rcard-top">家探しタイプ診断</div>
+      <div class="rcard-body">
+        <div id="rFig"></div>
+        <p class="r-code"><span class="bl" id="rBlood" hidden></span></p>
+        <h2 class="r-name" id="rName"></h2>
+        <p class="r-catch" id="rCatch"></p>
+        <div class="tags" id="rTags"></div>
+      </div>
+      <div class="coupon">
+        <span id="cpIcon"></span>
+        <p>この画面を持って相談に来てくれた方に<strong>ギフトカード2,000円分</strong>プレゼント</p>
+      </div>
+      <div class="rcard-foot">株式会社Lim ／ Instagram @lim.co.ltd</div>
+    </div>
+
+    <div class="panel sec">
+      <h3><i></i>このタイプの家の選び方</h3>
+      <p id="rDesc"></p>
+      <ul class="spec" id="rSpec"></ul>
+    </div>
+
+    <div class="panel sec">
+      <h3><i style="background:var(--pink)"></i>このタイプの落とし穴</h3>
+      <p class="pit" id="rPit"></p>
+    </div>
+
+    <div class="panel sec">
+      <h3><i style="background:var(--butter)"></i>4つの指標で見るあなた</h3>
+      <div class="letters" id="rLetters"></div>
+    </div>
+
+    <div class="panel sec" id="bloodSec" hidden>
+      <h3><i style="background:var(--pink)"></i><span id="bloodTitle"></span></h3>
+      <div class="blood-head"><b id="bloodMark"></b><p id="bloodChar"></p></div>
+      <p class="blood-tip"><strong id="bloodTipHead"></strong><span id="bloodTip"></span></p>
+    </div>
+
+    <div class="compat">
+      <div class="panel"><span id="gFig"></span><small>一緒に探すと◎</small><strong id="gName"></strong></div>
+      <div class="panel"><span id="bFig"></span><small>意見が割れがち</small><strong id="bName"></strong></div>
+    </div>
+
+    <div class="panel consult">
+      <h3>家探しは、<br><span>まず相談</span>から。</h3>
+      <ul>
+        <li><b>1</b><span>年収と貯金から、無理のない予算とローンの目安を出す</span></li>
+        <li><b>2</b><span>あなたのタイプに合うエリアと物件の探し方を一緒に決める</span></li>
+        <li><b>3</b><span>新築なら、提携ハウスメーカーとの家づくりまでつなぐ</span></li>
+      </ul>
+      <div class="howto">
+        <p>Instagramの公式アカウントに<br><strong>「診断見た」</strong>とスクショをDMするだけ。</p>
+        <p class="handle">@lim.co.ltd</p>
+        <div class="ig-row">
+          <a class="btn pink" href="https://www.instagram.com/lim.co.ltd/" target="_blank" rel="noopener">Instagramを開く</a>
+          <button class="btn small" id="copyHandle" type="button">IDをコピー</button>
+        </div>
+        <p style="font-size:13px">相談は来店でもオンラインでもOK。</p>
+      </div>
+      <p class="fine">※ギフトカードは初回のご相談をされた方が対象です。お一人様1回限り。契約・購入の有無は問いません。キャンペーンは予告なく終了する場合があります。</p>
+    </div>
+
+    <div class="share">
+      <a class="btn" id="shareX" href="#" target="_blank" rel="noopener">𝕏でシェア</a>
+      <a class="btn" id="shareTh" href="#" target="_blank" rel="noopener">Threadsでシェア</a>
+      <button class="btn sky wide" id="copyBtn" type="button">結果とリンクをコピー</button>
+      <button class="btn small wide" id="retryBtn" type="button">もう一度診断する</button>
+    </div>
+    <p class="credit">家探しタイプ診断 / 株式会社Lim<br>血液型の性格はお楽しみ要素です。</p>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+var SHARE_URL = "https://mmrlmmrl0628-bot.github.io/ie-shindan/";
+
+/* 4つの指標 */
+var AX = {
+  EI:{a:"E",b:"I",ta:"街派",tb:"家派",q:"暮らす場所"},
+  SN:{a:"S",b:"N",ta:"完成品派",tb:"つくる派",q:"建物の選び方"},
+  TF:{a:"T",b:"F",ta:"数字派",tb:"気持ち派",q:"大事にするもの"},
+  JP:{a:"J",b:"P",ta:"計画派",tb:"出会い派",q:"決め方"}
+};
+var ORDER = ["EI","SN","TF","JP"];
+var W = [3,1,-1,-3];  /* 左ほど a 側、右ほど b 側。奇数の重みなので引き分けにならない */
+
+var Q = [
+  {ax:"EI",t:"家を買おうと思ったきっかけに一番近いのは？",o:["通勤・通学をもっと楽にしたい","今の街が気に入っていて住み続けたい","子どもや家族のために家を持ちたい","もっと広い家に住みたい"]},
+  {ax:"SN",t:"新築と中古、気持ちに近いのは？",o:["せっかくのマイホームは新築がいい","築浅なら中古でもいい","立地がよければ築年数は気にしない","手頃な中古を買ってリフォームしたい"]},
+  {ax:"TF",t:"家を持ちたい理由に近いのは？",o:["家賃を払い続けるのがもったいない","老後の住まいを確保しておきたい","家族が安心して暮らせる場所がほしい","自分の好きなように暮らしたい"]},
+  {ax:"JP",t:"家探しで最初にすることは？",o:["年収と貯金から予算を計算する","ネットで相場や物件をひと通り調べる","住宅展示場やモデルルームに行ってみる","気になる物件があればまず見に行く"]},
+  {ax:"EI",t:"エリア選びで一番重視するのは？",o:["駅からの近さ・通勤時間","スーパーや病院など生活の便利さ","治安や街の雰囲気","公園や緑など周りの環境"]},
+  {ax:"SN",t:"物件を見るとき、一番気になるのは？",o:["耐震性・断熱性などの性能","キッチンやお風呂など設備の新しさ","価格と立地のバランス","リフォームでどう変えられるか"]},
+  {ax:"TF",t:"間取りを選ぶ基準は？",o:["将来売りやすい、一般的な間取り","部屋数が多く使い回しやすい間取り","家事がしやすい生活動線","趣味や好きなことができる空間"]},
+  {ax:"JP",t:"見学する物件の数は？",o:["10件以上は比べたい","5件くらい見てから決めたい","2〜3件で決めそう","気に入った1件があれば決める"]},
+  {ax:"EI",t:"同じ予算なら、どれを選ぶ？",o:["駅近のマンション","駅近で少しコンパクトな戸建て","駅からバス便の広い戸建て","郊外の土地付き注文住宅"]},
+  {ax:"SN",t:"家にかける予算、どこに使う？",o:["建物そのもののグレード","最新の設備","物件価格を抑えて立地に回す","購入費を抑えて内装に回す"]},
+  {ax:"TF",t:"10年後のこの家は？",o:["住み替えるときに高く売れていてほしい","いざというとき貸せるとうれしい","子どもの成長に合わせて住み続けたい","ずっと住む。売ることは考えていない"]},
+  {ax:"JP",t:"購入までの期間のイメージは？",o:["1年以上かけてじっくり","半年〜1年くらい","3〜6か月くらい","いい物件があれば1か月以内"]}
+];
+
+var T = {
+ ESFJ:["シティ派プランナー","駅近・築浅。条件はぜんぶ表で管理する。","通勤時間を削って、暮らしの時間を増やしたい人。物件は条件で絞り、比べてから動く。決めた後に後悔しないタイプ。","条件を増やしすぎて候補がゼロになる。譲れない条件は3つまでに絞る。"],
+ ESTJ:["資産価値ハンター","買う前から、売るときの価格を見ている。","駅距離・築年数・周辺の成約価格。数字で資産性を読む人。住まいを「持つ資産」として選ぶ。","資産性ばかり見て、自分が住みにくい部屋を選びがち。毎日住むのは自分。"],
+ ESFP:["眺望ひと目惚れ派","ドアを開けた瞬間に、もう決まっている。","駅近の新しいマンションを、窓からの景色と空気感で選ぶ人。毎日の気分の上がり方を大事にする。","管理費・修繕積立金を見落としやすい。ローンと合わせた月々の総額で判断する。"],
+ ESTP:["再開発エリア先取り派","これから伸びる街を、嗅ぎ分ける。","新駅・再開発・大型商業施設。街の変化に敏感で、勘で先回りする人。早く動ける分、当たりも大きい。","計画は延期や変更もある。自治体が公表している資料で裏を取ってから決める。"],
+ ENFJ:["駅近リノベ計算派","新築の予算で、駅近中古と理想の内装。","立地は妥協せず、建物は中古で賢く選ぶ人。リノベ費用まで含めた総額で比べる。","管理規約でできないリノベがある。床材や水回りの制限は購入前に確認する。"],
+ ENTJ:["割安物件の目利き","相場より安い理由を、必ず調べる。","成約事例と比べて割安な中古を見つける人。安さの理由が許容範囲なら迷わず買う。","修繕積立金の残高と大規模修繕の予定。ここが弱いと割安ではなくなる。"],
+ ENFP:["ヴィンテージ街暮らし派","古いマンションほど、愛着がわく。","好きな街の、味のある建物に住みたい人。新しさより雰囲気と立地を選ぶ。","旧耐震基準の建物は、ローンや税制で不利になることがある。建築時期は必ず確認する。"],
+ ENTP:["掘り出し物ハンター","新着通知は、誰より早く見る。","立地のいい中古を、直感とスピードで押さえる人。いい物件ほど早く決まると知っている。","急ぐほど見落としが増える。建物状況調査（インスペクション）だけは省かない。"],
+ ISFJ:["注文住宅の設計魔","間取り図を、自分で描いてしまう。","広さと生活動線にこだわり、仕様を一つずつ決めたい人。家づくりの過程そのものを楽しめる。","こだわるほど予算が膨らむ。土地・建物・諸費用の合計で上限を先に決める。"],
+ ISTJ:["高性能住宅マニア","断熱等級と耐震等級から見る。","性能の数字で家を選ぶ人。光熱費や将来の評価まで計算して新築を選ぶ。","性能の数字だけでは街の住みやすさはわからない。周辺は朝と夜の2回歩く。"],
+ ISFP:["庭付きマイホーム派","芝生の庭と、家族それぞれの部屋。","広い家と庭のある暮らしを思い描ける人。家族の時間を一番に考えて選ぶ。","駅や学校までの距離を「車があるから」で流しがち。家族全員の動線で確認する。"],
+ ISTP:["新しい街の開拓者","まだ何もない分譲地に、未来を見る。","開発中の分譲地や新しい住宅街に可能性を感じる人。街と一緒に育つ暮らしを選ぶ。","生活インフラが揃うまで時間がかかる。スーパー・病院・学校の計画を確認する。"],
+ INFJ:["中古戸建てリノベ計画派","広い家を、予算内で手に入れる。","新築では届かない広さを、中古戸建てとリノベで実現する人。工事費まで含めて計画を立てる。","見えない部分の劣化。購入前に建物状況調査を入れて、工事費を確定させる。"],
+ INTJ:["土地値重視の現実派","建物より、土地を買っている。","建物の価値は下がっても土地は残る、と考える人。土地の形・接道・用途地域まで見る。","再建築できない土地や接道の問題。安い土地には理由がある。"],
+ INFP:["古民家ロマン派","梁と縁側に、ひと目で落ちる。","古い家の佇まいに惹かれ、手をかけて住みたい人。暮らしを自分で育てるタイプ。","耐震・断熱の改修費が想定を超えやすい。自治体の補助金も合わせて調べる。"],
+ INTP:["一点物の発掘家","他の人が見逃す物件に、価値を見つける。","売りに出たばかりの個性ある戸建てや土地に反応する人。勘の良さが武器になる。","個性的な物件は、売るときの買い手が限られる。出口まで考えておく。"]
+};
+
+var L = {
+  E:["街派","人や街からエネルギーをもらう。駅近と便利さで暮らしが回る。","内見は誰かと一緒に。担当者にどんどん質問するほど、いい情報が集まる。","街"],
+  I:["家派","家で充電する。広さと静けさが暮らしの質を決める。","内見はひとりでじっくり見る時間をもらう。聞きたいことはメモにして先に送る。","家"],
+  S:["完成品派","今見えるものを信じる。完成した新築・築浅がしっくりくる。","モデルルームより実際の物件を数多く見る。見るほど判断の精度が上がる。","新"],
+  N:["つくる派","まだない姿を想像できる。中古＋リノベで理想を形にできる。","リノベ後のイメージ図や、街の将来計画を資料でもらう。それが決め手になる。","創"],
+  T:["数字派","数字で納得して決める。資産価値と売りやすさを見る。","返済額と諸費用のシミュレーションを最初に出してもらう。","数"],
+  F:["気持ち派","気持ちで決める。住み心地と家族の居心地を見る。","家族全員が「ここがいい」と言える物件を探す。一人の我慢で決めない。","心"],
+  J:["計画派","比べてから決める。予定が決まると動きやすい。","入居したい時期から逆算して、スケジュールを先に組む。","計"],
+  P:["出会い派","いい物件に出会ってから動く。チャンスに強い。","ローンの事前審査だけは先に済ませる。出会った瞬間に申し込める。","縁"]
+};
+
+var BLOOD = {
+  A:["几帳面で慎重。準備を整えてから動く。","書類や契約内容を丁寧に読めるのが強み。比べすぎて決められないときは、決める期限を先に置く。"],
+  B:["マイペースで好奇心旺盛。好きなものに一直線。","譲れない1点がはっきりしている。そこさえ満たせば、ほかの条件は柔軟でいい。"],
+  O:["おおらかで行動力がある。人とのつながりを大事にする。","決断が早い。勢いで決める前に、周辺の環境だけは自分の足で確かめる。"],
+  AB:["冷静で合理的。独自の感性も持っている。","物件を客観的に比べられる。気持ちが追いつかないときは、そこで暮らす自分を想像してみる。"]
+};
+
+function spec(c){
+  return [
+    ["種別", c[0]==="E"?"マンション":"一戸建て"],
+    ["立地", c[0]==="E"?"駅徒歩10分以内":"広さと環境を優先"],
+    ["築年数", c[1]==="S"?"新築・築浅":"中古＋リノベーション"],
+    ["重視", c[2]==="T"?"資産価値・売りやすさ":"住み心地・生活動線"],
+    ["決め方", c[3]==="J"?"条件を比べて絞る":"内見の第一印象"]
+  ];
+}
+
+/* ---------- おうちキャラ ---------- */
+var BODY = {ES:["#bfe9fa","#45bde8"],EN:["#c8f0e4","#5fc4a9"],IS:["#ffeaa8","#f2b740"],IN:["#ffd3e1","#ff8fb1"]};
+var INK="#2b3a55";
+function chara(c,mood){
+  var col=BODY[c[0]+c[1]], body=col[0], roof=col[1], tall=c[0]==="E";
+  var s='<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" stroke="'+INK+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">';
+  s+='<ellipse cx="70" cy="128" rx="44" ry="6" fill="'+INK+'" opacity=".12" stroke="none"/>';
+  var ey;
+  if(tall){
+    s+='<rect x="38" y="16" width="64" height="108" rx="16" fill="'+body+'"/>';
+    s+='<path d="M38 36V32a16 16 0 0 1 16-16h32a16 16 0 0 1 16 16v4Z" fill="'+roof+'"/>';
+    for(var r=0;r<2;r++)for(var k=0;k<3;k++) s+='<rect x="'+(48+k*16)+'" y="'+(44+r*15)+'" width="10" height="9" rx="3" fill="#fff" stroke-width="2.2"/>';
+    s+='<path d="M62 124v-12a8 8 0 0 1 16 0v12" fill="#fff" stroke-width="2.5"/>';
+    ey=86;
+  } else {
+    s+='<rect x="26" y="64" width="88" height="60" rx="14" fill="'+body+'"/>';
+    s+='<rect x="90" y="30" width="12" height="24" rx="3" fill="'+roof+'"/>';
+    s+='<path d="M18 70L70 26L122 70Z" fill="'+roof+'" stroke-width="3.5"/>';
+    s+='<circle cx="70" cy="52" r="7" fill="#fff" stroke-width="2.2"/>';
+    ey=88;
+  }
+  var lx=56, rx=84;
+  function eye(x){return '<circle cx="'+x+'" cy="'+ey+'" r="4.6" fill="'+INK+'" stroke="none"/><circle cx="'+(x+1.6)+'" cy="'+(ey-1.6)+'" r="1.5" fill="#fff" stroke="none"/>';}
+  s+= mood==="wink" ? '<path d="M'+(lx-5)+' '+ey+'q5 -5 10 0" fill="none"/>' : eye(lx);
+  s+= eye(rx);
+  s+='<ellipse cx="'+(lx-7)+'" cy="'+(ey+9)+'" rx="6" ry="3.6" fill="#ff8fb1" opacity=".55" stroke="none"/><ellipse cx="'+(rx+7)+'" cy="'+(ey+9)+'" rx="6" ry="3.6" fill="#ff8fb1" opacity=".55" stroke="none"/>';
+  s+='<path d="M64 '+(ey+8)+'q6 6 12 0" fill="none" stroke-width="2.6"/>';
+  /* J: めがね / P: ハート */
+  if(c[3]==="J") s+='<g fill="none" stroke-width="2.4"><circle cx="'+lx+'" cy="'+ey+'" r="9"/><circle cx="'+rx+'" cy="'+ey+'" r="9"/><path d="M'+(lx+9)+' '+ey+'h'+(rx-lx-18)+'"/></g>';
+  else s+='<path d="M114 30c-4-8-15-5-13 3c1 5 7 9 13 13c6-4 12-8 13-13c2-8-9-11-13-3Z" fill="#ff8fb1" stroke-width="2.4"/>';
+  /* S: きらきら / N: ばんそうこう */
+  if(c[1]==="S") s+='<path d="M22 22l3 8l8 3l-8 3l-3 8l-3-8l-8-3l8-3Z" fill="#ffd86e" stroke-width="2.2"/>';
+  else { var bx=tall?82:90, by=tall?101:71;
+    s+='<g transform="rotate(-25 '+(bx+10)+' '+(by+5)+')"><rect x="'+bx+'" y="'+by+'" width="20" height="10" rx="5" fill="#fff4dc" stroke-width="2"/><path d="M'+(bx+8)+' '+(by+3)+'v4M'+(bx+12)+' '+(by+3)+'v4" stroke-width="1.5"/></g>'; }
+  /* F: はっぱ / T: コイン */
+  if(c[2]==="F") s+='<path d="M18 124v-16" stroke-width="2.6"/><path d="M18 112c-10-2-12-12-10-16c8 0 12 6 10 16Z" fill="#8fdcc8" stroke-width="2.2"/><path d="M18 108c8-2 11-10 9-14c-7 1-10 6-9 14Z" fill="#8fdcc8" stroke-width="2.2"/>';
+  else s+='<circle cx="18" cy="112" r="11" fill="#ffd86e" stroke-width="2.5"/><path d="M14 106l4 5l4-5M18 111v8M14 113h8M14 116h8" fill="none" stroke-width="1.8"/>';
+  return s+'</svg>';
+}
+function giftIcon(){
+  return '<svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="8" y="22" width="40" height="28" rx="5" fill="#45bde8"/><rect x="5" y="15" width="46" height="10" rx="4" fill="#bfe9fa"/><path d="M28 15v35" stroke-width="5" stroke="#ff8fb1"/><path d="M28 15c-6-10-16-6-12 0Zm0 0c6-10 16-6 12 0Z" fill="#ff8fb1"/></svg>';
+}
+
+/* ---------- 状態 ---------- */
+var $=function(id){return document.getElementById(id)};
+var answers=[], idx=0, blood=null;
+var SCREENS=["s-intro","s-q","s-blood","s-load","s-result"];
+var TOTAL=Q.length+1;
+function show(id){
+  SCREENS.forEach(function(s){$(s).hidden=(s!==id)});
+  $("topbar").hidden=(id==="s-intro"||id==="s-load");
+  window.scrollTo(0,0);
+}
+
+function scores(){
+  var sc={}; ORDER.forEach(function(a){sc[a]=0});
+  Q.forEach(function(q,i){ if(answers[i]!==undefined) sc[q.ax]+=W[answers[i]]; });
+  return sc;
+}
+function codeOf(sc){
+  return ORDER.map(function(a){return sc[a]>=0?AX[a].a:AX[a].b}).join("");
+}
+
+function renderQ(){
+  var q=Q[idx];
+  $("qNum").textContent="Q"+(idx+1);
+  $("qText").textContent=q.t;
+  $("stepLabel").textContent=(idx+1)+" / "+TOTAL;
+  $("trackFill").style.width=(idx/TOTAL*100)+"%";
+  $("qPeek").innerHTML=chara(codeOf(scores()), idx%3===2?"wink":"");
+  var o=$("qOpts"); o.innerHTML="";
+  q.o.forEach(function(txt,k){
+    var b=document.createElement("button");
+    b.type="button"; b.className="opt"; b.dataset.k="ABCD"[k]; b.textContent=txt;
+    if(answers[idx]===k) b.classList.add("chosen");
+    b.addEventListener("click",function(){
+      answers[idx]=k; b.classList.add("chosen");
+      setTimeout(function(){
+        if(idx<Q.length-1){idx++;renderQ();}
+        else showBlood();
+      },170);
+    });
+    o.appendChild(b);
+  });
+}
+
+function showBlood(){
+  $("stepLabel").textContent=TOTAL+" / "+TOTAL;
+  $("trackFill").style.width=(Q.length/TOTAL*100)+"%";
+  $("bPeek").innerHTML=chara(codeOf(scores()),"");
+  show("s-blood");
+}
+function pickBlood(v){
+  blood=v;
+  $("trackFill").style.width="100%";
+  $("loadFig").innerHTML=chara(codeOf(scores()),"wink");
+  show("s-load"); setTimeout(result,1300);
+}
+
+function flip(code,pos){
+  return code.split("").map(function(ch,i){
+    if(pos.indexOf(i)<0) return ch;
+    var ax=AX[ORDER[i]]; return ch===ax.a?ax.b:ax.a;
+  }).join("");
+}
+
+var current={};
+function result(){
+  var sc=scores(), c=codeOf(sc), t=T[c];
+  $("stepLabel").textContent="完了";
+  $("rFig").innerHTML=chara(c,"");
+  $("rName").textContent=t[0];
+  $("rCatch").textContent=t[1];
+  var sp=spec(c);
+  $("rTags").innerHTML=[sp[0][1],sp[2][1],sp[3][1].split("・")[0]].map(function(x){return '<span class="tag">'+x+'</span>'}).join("");
+  $("rDesc").textContent=t[2];
+  $("rSpec").innerHTML=sp.map(function(x){return "<li><b>"+x[0]+"</b><span>"+x[1]+"</span></li>"}).join("");
+  $("rPit").textContent=t[3];
+
+  $("rLetters").innerHTML=ORDER.map(function(a,i){
+    var ch=c[i], ax=AX[a], info=L[ch];
+    var pa=Math.round((sc[a]+9)/18*100), left=sc[a]>=0, w=left?pa:100-pa;
+    var bar=left?'<i style="left:0;width:'+w+'%"></i>':'<i style="right:0;width:'+w+'%"></i>';
+    return '<div class="letter"><b>'+info[3]+'</b><div><strong>'+info[0]+' '+w+'%</strong>'+
+      '<div class="meterbar"><span>'+ax.ta+'</span><div class="bar" role="img" aria-label="'+info[0]+' '+w+'%">'+bar+'</div><span>'+ax.tb+'</span></div>'+
+      info[1]+'<span>コツ：'+info[2]+'</span></div></div>';
+  }).join("");
+
+  $("rBlood").hidden=!blood; $("rBlood").textContent=blood?blood+"型":"";
+  $("bloodSec").hidden=!blood;
+  if(blood){
+    $("bloodTitle").textContent=blood+"型 × "+t[0];
+    $("bloodMark").textContent=blood;
+    $("bloodChar").textContent=BLOOD[blood][0];
+    $("bloodTipHead").textContent=blood+"型の"+t[0];
+    $("bloodTip").textContent=BLOOD[blood][1];
+  }
+
+  var g=flip(c,[3]), b=flip(c,[0,2]);
+  $("gFig").innerHTML=chara(g,""); $("gName").textContent=T[g][0];
+  $("bFig").innerHTML=chara(b,""); $("bName").textContent=T[b][0];
+
+  var text="私の家探しタイプは【"+t[0]+"】"+(blood?"（"+blood+"型）":"")+"でした🏠\n"+t[1]+"\n#家探しタイプ診断";
+  current.full=text+"\n"+SHARE_URL;
+  $("shareX").href="https://twitter.com/intent/tweet?text="+encodeURIComponent(text)+"&url="+encodeURIComponent(SHARE_URL);
+  $("shareTh").href="https://www.threads.net/intent/post?text="+encodeURIComponent(current.full);
+  show("s-result");
+}
+
+/* ---------- イベント ---------- */
+function copyText(btn,txt,label){
+  function done(){btn.textContent="コピーしました";btn.classList.add("copied");setTimeout(function(){btn.textContent=label;btn.classList.remove("copied")},1800);}
+  function fallback(){
+    var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");done();}catch(e){}
+    ta.remove();
+  }
+  try{navigator.clipboard.writeText(txt).then(done,fallback);}catch(e){fallback();}
+}
+$("bloodGrid").addEventListener("click",function(e){var b=e.target.closest(".bt"); if(b) pickBlood(b.dataset.b);});
+$("bloodSkip").addEventListener("click",function(){pickBlood(null);});
+$("startBtn").addEventListener("click",function(){answers=[];idx=0;blood=null;show("s-q");renderQ();});
+$("backBtn").addEventListener("click",function(){
+  if(!$("s-result").hidden){showBlood();return;}
+  if(!$("s-blood").hidden){idx=Q.length-1;show("s-q");renderQ();return;}
+  if(idx>0){idx--;renderQ();} else show("s-intro");
+});
+$("retryBtn").addEventListener("click",function(){answers=[];idx=0;blood=null;show("s-intro");});
+$("copyBtn").addEventListener("click",function(){copyText(this,current.full||"","結果とリンクをコピー");});
+$("copyHandle").addEventListener("click",function(){copyText(this,"@lim.co.ltd","IDをコピー");});
+
+$("introCast").innerHTML=chara("ENTP","")+chara("ESFJ","")+chara("ISFP","wink")+chara("INTJ","");
+$("introGift").innerHTML=giftIcon()+'<span>診断結果のスクショを持って相談に来てくれた方に<br><b>ギフトカード2,000円分</b>プレゼント</span>';
+$("cpIcon").innerHTML=giftIcon();
+})();
+</script>
+
+</body>
+</html>
