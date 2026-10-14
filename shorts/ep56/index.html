@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>第56話 ホワイトボード風ショート動画</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="fonts/noto900.css">
+<style>
+  html,body{margin:0;background:#eceae4;}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#fff;
+    box-shadow:inset 0 0 140px rgba(0,0,0,.07);font-family:'Noto Sans JP',sans-serif;font-weight:900;transform-origin:0 0;}
+  .scene{position:absolute;inset:0;display:none}
+  .scene svg{position:absolute;inset:0;width:1080px;height:1920px}
+  .t{position:absolute;white-space:nowrap;line-height:1.3;transform:translateX(-50%);
+     -webkit-text-stroke:1.5px currentColor;letter-spacing:.02em}
+  .h{background:linear-gradient(transparent 60%,var(--hc,#ffe066) 60%,var(--hc,#ffe066) 94%,transparent 94%) no-repeat;
+     background-size:calc(var(--p,0)*100%) 100%;padding:0 .08em}
+  #bar{position:absolute;left:0;bottom:0;height:14px;background:#ffb347}
+</style>
+</head>
+<body>
+<div id="stage"><div id="bar"></div></div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const stage=document.getElementById('stage');
+const bar=document.getElementById('bar');
+const INK='#2b2b2b', ORANGE='#ffb347', PINK='#ff9eb5', BLUE='#8ecdf5', GREEN='#8fd694', YELLOW='#ffe066', RED='#ff5a5f', PURPLE='#c3a6ff', SKIN='#ffe0c2', NAVY='#6f8fd8';
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>1-Math.pow(1-x,3);
+const back=x=>{const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+
+/* ---------- svg string helpers ---------- */
+const ST=`stroke="${INK}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"`;
+const path=(d,f='none',x='')=>`<path d="${d}" fill="${f}" ${x} ${ST}/>`;
+const circ=(cx,cy,r,f='none',x='')=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" ${x} ${ST}/>`;
+const rect=(x,y,w,h,f='none',rx=0,e='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${f}" ${e} ${ST}/>`;
+const line=(x1,y1,x2,y2,e='')=>`<path d="M${x1} ${y1} L${x2} ${y2}" fill="none" ${e} ${ST}/>`;
+const dot=(cx,cy,r,f=INK)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" stroke="none" data-nd="1"/>`;
+const blush=(cx,cy,rx=12,ry=8)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#ff9eb5" opacity=".75" stroke="none" data-nd="1"/>`;
+const txt=(x,y,s,str,f=INK,a='middle')=>`<text x="${x}" y="${y}" font-size="${s}" font-weight="900" font-family="'Noto Sans JP'" fill="${f}" text-anchor="${a}" stroke="none" data-nd="1">${str}</text>`;
+const arm=(d,c)=>`<path d="${d}" fill="none" stroke="${INK}" stroke-width="26" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="14" stroke-linecap="round"/>`;
+
+function person(o={}){
+  const {shirt=BLUE,hair='#5a4030',glasses=0,tie=0,style='short',arms='down',headOnly=0,badge='',face='smile'}=o;
+  let s='';
+  if(!headOnly){
+    const L=arms==='up'||arms==='cheer'?'M-48 112 Q-92 84 -90 26':arms==='point'?'M-48 112 Q-90 130 -108 118':'M-48 118 Q-84 142 -78 188';
+    const R=arms==='up'||arms==='cheer'||arms==='wave'?'M48 112 Q92 84 90 26':arms==='point'?'M48 112 Q90 130 108 118':'M48 118 Q84 142 78 188';
+    s+=arm(L,shirt)+arm(R,shirt);
+    s+=path('M-58 214 Q-62 84 0 76 Q62 84 58 214 Z',shirt);
+    if(tie)s+=path('M-14 80 L0 96 L14 80',  '#fff')+path('M0 96 L-10 112 L0 156 L10 112 Z',RED);
+    if(badge)s+=txt(0,160,26,badge,INK);
+  }
+  s+=circ(0,0,62,SKIN);
+  if(style==='short')s+=path('M-64 -4 Q-74 -82 0 -78 Q74 -82 64 -4 Q50 -46 0 -44 Q-50 -46 -64 -4Z',hair);
+  if(style==='bob')s+=path('M-70 44 Q-84 -88 0 -82 Q84 -88 70 44 Q60 -28 40 -48 Q0 -34 -40 -48 Q-60 -28 -70 44Z',hair);
+  if(style==='bun')s+=circ(0,-84,24,hair)+path('M-64 -4 Q-74 -82 0 -78 Q74 -82 64 -4 Q50 -46 0 -44 Q-50 -46 -64 -4Z',hair);
+  if(style==='boss')s+=path('M-62 -10 Q-64 -70 0 -66 Q64 -70 62 -10 Q40 -40 0 -38 Q-40 -40 -62 -10Z',hair);
+  s+=dot(-22,8,7)+dot(22,8,7)+blush(-40,28)+blush(40,28);
+  if(face==='open')s+=path('M-14 26 Q0 54 14 26 Z','#ff8a8a','stroke-width="5"');
+  else s+=path('M-14 28 Q0 42 14 28','none','stroke-width="5"');
+  if(glasses)s+=circ(-22,8,18)+circ(22,8,18)+line(-4,8,4,8);
+  return s;
+}
+function desk(cx,y,mon=1){
+  let s=rect(cx-92,y,184,18,'#e8c39e',6)+rect(cx-80,y+18,14,84,'#e8c39e',4)+rect(cx+66,y+18,14,84,'#e8c39e',4);
+  if(mon)s+=path(`M${cx-12} ${y} L${cx-18} ${y-16} L${cx+18} ${y-16} L${cx+12} ${y}`,'#ddd')+rect(cx-48,y-82,96,66,'#fff',8)+`<rect x="${cx-40}" y="${y-74}" width="80" height="50" rx="4" fill="#bfe6ff" stroke="none" data-nd="1"/>`;
+  return s;
+}
+function house(cx,base,w,h,roof,wall='#fff7ea'){
+  const x=cx-w/2;
+  return rect(x,base-h,w,h,wall,6)+path(`M${x-14} ${base-h+4} L${cx} ${base-h-w*0.42} L${x+w+14} ${base-h+4} Z`,roof)
+   +rect(cx-w*0.14,base-h*0.55,w*0.28,h*0.55,'#c9a27a',4)+rect(x+w*0.1,base-h*0.8,w*0.2,w*0.2,'#bfe6ff',3);
+}
+function tree(cx,base,s=1){return rect(cx-8*s,base-70*s,16*s,70*s,'#b98b5e',3)+circ(cx,base-100*s,50*s,'#a8e0a0');}
+function heart(cx,cy,s,f=PINK){return path(`M${cx} ${cy+40*s} C${cx-90*s} ${cy-10*s} ${cx-45*s} ${cy-70*s} ${cx} ${cy-25*s} C${cx+45*s} ${cy-70*s} ${cx+90*s} ${cy-10*s} ${cx} ${cy+40*s} Z`,f);}
+function sparkle(cx,cy,r,f=YELLOW){return path(`M${cx} ${cy-r} Q${cx+r*.2} ${cy-r*.2} ${cx+r} ${cy} Q${cx+r*.2} ${cy+r*.2} ${cx} ${cy+r} Q${cx-r*.2} ${cy+r*.2} ${cx-r} ${cy} Q${cx-r*.2} ${cy-r*.2} ${cx} ${cy-r}Z`,f,'stroke-width="5"');}
+function bubble(x,y,w,h,f,tailX,tailDir='down'){
+  const r=40;let s=rect(x,y,w,h,f,r);
+  if(tailDir==='down')s+=path(`M${tailX-26} ${y+h-2} L${tailX} ${y+h+44} L${tailX+26} ${y+h-2}`,f);
+  if(tailDir==='left')s+=path(`M${x+2} ${y+h/2-24} L${x-40} ${y+h/2+6} L${x+2} ${y+h/2+26}`,f);
+  return s;
+}
+function bulb(cx,cy,r=44){
+  let s='';for(let i=0;i<7;i++){const a=(-160+i*23)*Math.PI/180;s+=line(cx+Math.cos(a)*(r+16),cy+Math.sin(a)*(r+16),cx+Math.cos(a)*(r+40),cy+Math.sin(a)*(r+40),'stroke-width="5"');}
+  return s+circ(cx,cy,r,YELLOW)+rect(cx-18,cy+r-4,36,24,'#ccc',6);
+}
+
+/* ---------- scene engine ---------- */
+const scenes=[];let cum=0;
+function scene(dur){
+  const el=document.createElement('div');el.className='scene';
+  const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 1080 1920');el.appendChild(svg);
+  stage.insertBefore(el,bar);
+  const sc={dur,start:cum,el,svg,items:[]};cum+=dur;scenes.push(sc);
+  sc.t=(at,y,html,size,color=INK,o={})=>T(sc,at,y,html,size,color,o);
+  sc.g=(at,dur,svgStr,o={})=>G(sc,at,dur,svgStr,o);
+  return sc;
+}
+function T(sc,at,y,html,size,color,o){
+  const d=document.createElement('div');d.className='t';
+  d.style.cssText=`left:${o.x??540}px;top:${y-size*0.65}px;font-size:${size}px;color:${color};`;
+  d.innerHTML=html;sc.el.appendChild(d);
+  const dur=o.dur??Math.max(.5,[...d.textContent].length*0.075);
+  const hs=[...d.querySelectorAll('.h')];
+  sc.items.push(ts=>{
+    const p=clamp((ts-at)/dur);
+    d.style.visibility=ts<at?'hidden':'visible';
+    d.style.clipPath=`inset(-30px ${(1-ease(p))*100}% -30px -30px)`;
+    const hp=ease(clamp((ts-at-dur*0.7)/0.5));
+    hs.forEach(h=>h.style.setProperty('--p',hp));
+  });
+}
+function G(sc,at,dur,svgStr,o){
+  const g=document.createElementNS(NS,'g');g.innerHTML=svgStr;sc.svg.appendChild(g);
+  const x=o.x||0,y=o.y||0,s=o.s||1,mode=o.mode||'draw',rot=o.rot||0,ph=Math.random()*6;
+  const shapes=[...g.querySelectorAll('path,circle,rect,ellipse')].filter(e=>!e.hasAttribute('data-nd'));
+  const nds=[...g.querySelectorAll('[data-nd]')];
+  const fills=shapes.map(e=>{
+    const f=e.getAttribute('fill');return f&&f!=='none'?f:null;});
+  if(mode==='draw')shapes.forEach(e=>{e.setAttribute('pathLength','1');e.style.strokeDasharray='1 1';});
+  const nops=nds.map(e=>e.getAttribute('opacity')||'1');
+  sc.items.push(ts=>{
+    const p=clamp((ts-at)/dur);
+    let ox=x,oy=y,sc2=s,vis=ts>=at;
+    if(o.bob&&p>=1)oy+=Math.sin(ts*3.2+ph)*o.bob;
+    if(mode==='pop'){
+      const k=back(clamp((ts-at)/dur));sc2=s*Math.max(.001,k);
+      g.style.opacity=clamp((ts-at)/(dur*.4));
+    }
+    g.setAttribute('transform',`translate(${ox},${oy}) rotate(${rot}) scale(${sc2})`);
+    g.style.visibility=vis?'visible':'hidden';
+    if(mode==='draw'){
+      const n=shapes.length;
+      shapes.forEach((e,i)=>{
+        const st=(i/n)*.7, q=clamp((p-st)/.3);
+        e.style.strokeDashoffset=1-q;
+        e.style.opacity=q>0?1:0;
+        if(fills[i])e.setAttribute('fill-opacity',clamp((q-.55)/.45));
+      });
+      const f=clamp((p-.85)/.15);nds.forEach((e,i)=>e.setAttribute('opacity',f*nops[i]));
+    }else if(mode==='fade'){
+      g.style.opacity=ease(p);
+    }
+  });
+}
+
+function render(t){
+  scenes.forEach(sc=>{
+    const vis=t>=sc.start&&t<sc.start+sc.dur;
+    sc.el.style.display=vis?'block':'none';
+    if(!vis)return;
+    const ts=t-sc.start;
+    sc.el.style.opacity=clamp(Math.min(ts/.12,(sc.dur-ts)/.35));
+    sc.items.forEach(f=>f(ts));
+  });
+  bar.style.width=(t/cum*1080)+'px';
+}
+
+/* ================= SCENES ================= */
+let sc;
+
+/* 1 タイトル */
+sc=scene(6.5);
+sc.t(.2,330,'第56話',84,'#ff8a1f',{dur:.6});
+sc.t(.9,470,'お客様ゼロなのに、',100);
+sc.t(1.9,610,'<span class="h">パートを4人</span>',120);
+sc.t(3.0,750,'採用した理由。',120);
+sc.g(3.6,0.6,person({shirt:NAVY,glasses:1,tie:1,arms:'cheer',style:'short',hair:'#3a2a20'}),{x:540,y:1010,s:1.15,mode:'pop',bob:5});
+[[150,PINK,'bob'],[330,YELLOW,'bun'],[750,GREEN,'bob'],[930,PURPLE,'short']].forEach(([x,c,st],i)=>{
+  sc.g(4.1+i*.35,.5,person({shirt:c,style:st,arms:'wave'}),{x:x,y:1330+(i%2)*40,s:.62,mode:'pop',bob:4});
+});
+sc.g(4.0,.6,sparkle(130,780,36)+sparkle(950,820,30,PINK)+sparkle(860,540,26,BLUE),{mode:'pop'});
+sc.t(4.9,1700,'税理士事務所・開業物語',56,'#888',{dur:.8});
+
+/* 2 お客様ゼロ・売上ゼロ */
+sc=scene(7.5);
+sc.t(.3,310,'お客様ゼロ。',120,RED);
+sc.t(1.1,450,'売上ゼロ。',120,RED);
+sc.t(1.9,585,'なのに…',100,'#666');
+sc.t(2.7,740,'<span class="h">パートを4人採用!</span>',110);
+const xs=[150,390,630,870],cols=[PINK,YELLOW,GREEN,PURPLE],sty=['bob','bun','bob','short'];
+xs.forEach((x,i)=>sc.g(3.8+i*.35,.5,person({shirt:cols[i],style:sty[i],arms:'wave'}),{x:x,y:990,s:.62,mode:'pop',bob:4}));
+xs.forEach((x,i)=>sc.g(3.0+i*.25,.6,desk(x,1090),{}));
+sc.t(5.2,1330,'机も4つ。',92);
+sc.t(5.9,1450,'パソコンも4台。',92);
+sc.g(6.2,.5,person({shirt:NAVY,glasses:1,tie:1,style:'short',hair:'#3a2a20'})+path('M60 -50 Q72 -30 62 -14 Q52 -30 60 -50Z',BLUE,'stroke-width="4"'),{x:540,y:1690,s:.6,mode:'pop'});
+
+/* 3 先に理想の体制 */
+sc=scene(7.5);
+sc.t(.3,300,'ふつうは…',72,'#888');
+sc.g(.8,.5,person({shirt:ORANGE,hair:'#6b4a2f',style:'boss',tie:1}),{x:210,y:620,s:.75,mode:'pop',bob:4});
+sc.g(1.2,.9,bubble(380,430,630,300,'#f2f2f2',380,'left'));
+sc.t(1.9,555,'売上が増えたら',76,INK,{x:695});
+sc.t(2.6,655,'人を雇おう',76,INK,{x:695});
+sc.t(3.6,930,'でも私は',84);
+sc.t(4.2,1070,'<span class="h" style="--hc:#ffc2c7">逆</span>でした!',140,RED);
+sc.g(4.8,.7,person({shirt:NAVY,glasses:1,tie:1,arms:'up',hair:'#3a2a20'}),{x:250,y:1500,s:.9,mode:'pop',bob:5});
+sc.g(5.0,.7,bulb(250,1290),{mode:'pop'});
+sc.t(5.2,1345,'理想の仕事を',66,INK,{x:700});
+sc.t(5.6,1430,'するために、',66,INK,{x:700});
+sc.t(6.0,1540,'先に理想の',90,RED,{x:700});
+sc.t(6.5,1650,'体制をつくろう!',86,RED,{x:690});
+
+/* 4 95%事務作業 */
+sc=scene(8);
+sc.t(.3,300,'税理士事務所の仕事の',78);
+sc.t(1.2,430,'<span class="h">95%は事務作業</span>',108);
+const cx=540,cy=880,R=235;
+const ex=cx+R*Math.sin(Math.PI/10),ey=cy-R*Math.cos(Math.PI/10);
+sc.g(2.0,1.4,path(`M${cx} ${cy} L${ex} ${ey} A${R} ${R} 0 1 1 ${cx} ${cy-R} Z`,ORANGE)+path(`M${cx+10} ${cy-10} L${cx+10} ${cy-R-10} A${R} ${R} 0 0 1 ${ex+10} ${ey-10} Z`,BLUE),{});
+sc.g(3.4,.4,txt(cx-20,cy+36,120,'95%','#fff')+txt(cx+120,cy-R-34,48,'5%',INK),{mode:'fade'});
+sc.t(4.0,1180,'資料の回収・整理・確認・入力・集計',46,'#777',{dur:1.0});
+sc.t(5.0,1330,'どれも大切な仕事。でも',72);
+sc.t(5.9,1445,'経営者と考えたいのは',78);
+sc.t(6.7,1600,'<span class="h">会社の未来!</span>',132,RED);
+
+/* 5 入力しない */
+sc=scene(8);
+sc.t(.3,290,'独立するとき、',80);
+sc.t(1.0,395,'ひとつ決めました。',80);
+sc.t(2.0,550,'自分では',100);
+sc.t(2.8,690,'入力作業を',120);
+sc.t(3.6,850,'<span class="h" style="--hc:#ffc2c7">一切しない!</span>',146,RED);
+sc.g(4.6,.6,person({shirt:PINK,style:'bob',arms:'up'}),{x:280,y:1170,s:.82,mode:'pop',bob:4});
+sc.g(4.4,.6,desk(280,1290),{});
+sc.g(5.1,.6,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',arms:'point'}),{x:690,y:1190,s:.7,mode:'pop',bob:4});
+sc.g(5.3,.6,person({shirt:ORANGE,style:'boss',hair:'#777',tie:1}),{x:900,y:1190,s:.7,mode:'pop',bob:4});
+sc.g(5.8,.5,bubble(620,990,330,110,'#fff4cf',780,'down').replace(/stroke-width="6"/g,'stroke-width="5"'),{mode:'pop'});
+sc.g(5.9,.5,txt(785,1066,44,'未来の話!',INK),{mode:'fade'});
+sc.t(6.3,1540,'<span style="color:#d6407a">数字をつくる</span>→スタッフ',48,INK,{x:300,dur:.9});
+sc.t(6.8,1610,'数字を使って→<span style="color:#d6407a">私は経営者と話す</span>',46,INK,{x:640,dur:1});
+sc.g(6.2,.5,path('M510 1380 L560 1380 M540 1360 L565 1380 L540 1400','none','stroke-width="7"'),{mode:'fade',x:-10,y:-60});
+
+/* 6 郊外 */
+sc=scene(8);
+sc.t(.3,290,'事務所の場所は',80);
+sc.t(1.1,420,'<span class="h">郊外の住宅地</span>',110);
+sc.g(1.8,.6,circ(900,610,44,YELLOW)+line(900,540,900,520)+line(960,610,982,610)+line(940,560,956,544),{mode:'pop'});
+sc.g(2.0,.7,house(150,1010,150,120,'#ff9eb5')+tree(290,1010,.9),{});
+sc.g(2.5,1,house(590,1010,260,180,RED)+rect(520,860,150,50,'#fff',6)+txt(595,897,36,'事務所',RED),{});
+sc.g(2.9,.7,tree(420,1010,1)+house(830,1010,150,120,BLUE)+tree(960,1010,.8),{});
+sc.g(3.4,.5,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',arms:'wave'}),{x:410,y:880,s:.38,mode:'pop'});
+sc.t(4.0,1150,'求人にはこう書いた',64,'#777');
+sc.g(4.6,.9,rect(110,1230,860,250,'#fff7d6',40)+heart(190,1280,.45)+heart(890,1430,.4,'#ffb3c6'),{});
+sc.t(5.2,1355,'遅刻・早退<span style="color:#ff5a5f">OK</span>',122);
+sc.g(5.8,.5,person({shirt:PINK,style:'bun',arms:'wave'}),{x:240,y:1640,s:.55,mode:'pop',bob:4});
+sc.g(6.0,.5,person({shirt:YELLOW,style:'short',hair:'#7a5a3a'}),{x:400,y:1700,s:.34,mode:'pop',bob:4});
+sc.t(6.1,1625,'通いやすい',64,INK,{x:760});
+sc.t(6.6,1715,'子どもの用事で休める',50,INK,{x:690,dur:.9});
+
+/* 7 応募 */
+sc=scene(7);
+sc.t(.3,300,'すると…',80,'#777');
+[[130,PINK,'bob'],[335,YELLOW,'bun'],[540,GREEN,'short'],[745,PURPLE,'bob'],[950,ORANGE,'short']].forEach(([x,c,st],i)=>
+  sc.g(.8+i*.25,.5,person({shirt:c,style:st,arms:'up',face:'open'}),{x:x,y:600+(i%2)*40,s:.58,mode:'pop',bob:5}));
+sc.g(1.5,.5,sparkle(80,440,26)+sparkle(1000,470,30,PINK)+sparkle(540,400,22,BLUE),{mode:'pop'});
+sc.t(2.4,880,'<span class="h">応募がたくさん!</span>',112);
+sc.t(3.4,1050,'一番最初に応募した方は',64,'#666');
+sc.t(4.1,1170,'税理士の有資格者!',100,RED);
+sc.g(4.6,.6,person({shirt:'#8fd694',style:'bob',arms:'up',badge:''}),{x:330,y:1500,s:.9,mode:'pop',bob:4});
+sc.g(4.9,.8,rect(560,1380,380,250,'#fffdf2',10,'transform="rotate(-5 750 1500)"')+`<g transform="rotate(-5 750 1500)">`+txt(750,1480,66,'税理士','#d6407a')+txt(750,1560,40,'有資格者',INK)+`</g>`+sparkle(960,1370,34)+sparkle(540,1370,26,PINK),{});
+sc.t(6.0,1760,'その方は今も活躍中!',66,INK,{dur:.9});
+
+/* 8 LINE */
+sc=scene(7.5);
+sc.t(.3,290,'お客様とのやり取りは',76);
+sc.t(1.2,425,'<span class="h" style="--hc:#c8f0d3">LINE</span>が中心',124,'#06a844');
+sc.g(1.9,1,rect(200,550,680,990,'#fff',70)+rect(228,640,624,860,'#e7f7ec',30)+path('M228 700 L228 670 Q228 640 258 640 L822 640 Q852 640 852 670 L852 700 Z','#06c755'),{});
+sc.g(2.7,.4,txt(540,688,36,'グループ','#fff'),{mode:'fade'});
+// 社長
+sc.g(3.0,.5,person({shirt:ORANGE,style:'boss',hair:'#777',tie:1,headOnly:1}),{x:285,y:785,s:.46,mode:'pop'});
+sc.g(3.0,.6,bubble(345,745,420,100,'#fff',0,'none'),{mode:'pop'});
+sc.t(3.5,805,'領収書です!',44,INK,{x:555,dur:.6});
+// 私
+sc.g(4.2,.5,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',headOnly:1}),{x:795,y:955,s:.46,mode:'pop'});
+sc.g(4.2,.6,bubble(295,915,420,100,'#a7ecb8',0,'none'),{mode:'pop',x:100});
+sc.t(4.7,975,'確認しますね',44,INK,{x:605,dur:.6});
+// スタッフ
+sc.g(5.2,.5,person({shirt:PINK,style:'bob',headOnly:1}),{x:285,y:1125,s:.46,mode:'pop'});
+sc.g(5.2,.6,bubble(345,1085,470,100,'#fff',0,'none'),{mode:'pop'});
+sc.t(5.7,1145,'入力しておきます!',42,INK,{x:580,dur:.7});
+sc.t(6.5,1655,'不明点もここで完結!',70,INK,{dur:.9});
+
+/* 9 訪問 */
+sc=scene(8);
+sc.t(.3,290,'せっかく社長と会うのに',76);
+sc.g(1.0,.7,bubble(90,400,900,120,'#ececec',0,'none'),{mode:'pop'});
+sc.t(1.4,462,'この支払いは何ですか?',64,'#555',{dur:.8});
+sc.g(2.2,.7,bubble(90,570,900,120,'#ececec',0,'none'),{mode:'pop'});
+sc.t(2.6,632,'あの資料を用意してください',58,'#555',{dur:.9});
+sc.g(3.4,.5,line(150,415,930,505,'stroke="'+RED+'" stroke-width="12"')+line(150,585,930,675,'stroke="'+RED+'" stroke-width="12"'),{});
+sc.t(4.0,820,'もったいない!',104,RED);
+sc.t(4.9,960,'その時間で話したい',78);
+sc.g(5.3,.8,bubble(110,1020,860,240,'#ffe9b8',330,'down'),{mode:'pop'});
+sc.t(5.8,1100,'社長、',76,INK,{dur:.5});
+sc.t(6.2,1190,'これからどうしましょうか?',60,'#d6407a',{dur:1.1});
+sc.g(6.0,.6,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',face:'open'}),{x:330,y:1470,s:.82,mode:'pop',bob:4});
+sc.g(6.4,.6,person({shirt:ORANGE,style:'boss',hair:'#777',tie:1}),{x:740,y:1470,s:.82,mode:'pop',bob:4});
+sc.g(7.0,.5,sparkle(560,1420,36)+sparkle(560,1560,24,PINK),{mode:'pop'});
+
+/* 10 スタッフあってこそ */
+sc=scene(7.5);
+sc.t(.3,290,'事務所の付加価値は',82);
+sc.t(1.1,410,'私だけでつくって',92);
+sc.t(1.9,525,'いるのではない。',92,RED);
+sc.g(2.8,.7,heart(540,760,1.7),{mode:'pop',bob:6});
+sc.g(3.2,.6,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',arms:'up'}),{x:540,y:1010,s:.85,mode:'pop',bob:4});
+[[130,PINK,'bob'],[300,YELLOW,'bun'],[780,GREEN,'bob'],[950,PURPLE,'short']].forEach(([x,c,st],i)=>
+  sc.g(3.6+i*.3,.5,person({shirt:c,style:st,arms:i<2?'up':'wave'}),{x:x,y:1070,s:.55,mode:'pop',bob:4}));
+sc.g(4.5,.5,sparkle(110,870,26)+sparkle(980,880,26,PINK)+sparkle(330,830,20,BLUE)+sparkle(760,840,20),{mode:'pop'});
+sc.t(5.0,1400,'それぞれの役割を担う',74);
+sc.t(5.7,1520,'スタッフがいて、',92);
+sc.t(6.4,1640,'<span class="h">はじめて実現</span>できる',92);
+
+/* 11 逆算 */
+sc=scene(8);
+sc.t(.3,290,'売上を待ってから',84,'#999');
+sc.g(1.3,.5,line(140,285,940,285,'stroke="'+RED+'" stroke-width="10"'),{});
+sc.t(1.9,420,'理想の形を先につくり、',76);
+sc.t(2.9,545,'<span class="h">売上をつくっていく!</span>',92);
+sc.g(3.6,1.2,path('M80 1380 L560 800 Q580 780 600 800 L1000 1380 Z','#dff0ff')+path('M470 920 L560 800 Q580 780 600 800 L690 920 Q620 900 580 930 Q520 900 470 920Z','#fff'),{});
+sc.g(4.8,.6,line(580,780,580,640)+path('M580 640 L690 675 L580 712 Z',RED),{});
+sc.g(5.2,.4,txt(632,684,28,'未来','#fff'),{mode:'fade'});
+sc.g(5.0,.9,path('M600 740 Q300 700 215 1190','none','stroke="'+BLUE+'" stroke-width="9"')+path('M215 1190 l-20 -48 M215 1190 l44 -34','none','stroke-width="8"'),{});
+sc.g(5.4,.6,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',arms:'cheer'}),{x:210,y:1300,s:.62,mode:'pop',bob:4});
+sc.t(6.1,1535,'<span class="h" style="--hc:#d6efff">未来から逆算</span>する',88);
+sc.t(7.0,1660,'これも経営判断!',100,RED,{dur:.9});
+
+/* 12 エンディング */
+sc=scene(9);
+sc.t(.3,300,'数字をつくる時間を',80,'#888');
+sc.t(1.1,415,'減らすためではない。',80,'#888');
+sc.g(2.0,.5,line(240,402,840,402,'stroke="'+RED+'" stroke-width="9"'),{});
+sc.t(2.8,590,'数字を使って',104);
+sc.t(3.7,725,'未来を考える時間を',96);
+sc.t(4.7,880,'<span class="h" style="--hc:#ffc2c7">増やすために。</span>',128,RED);
+sc.g(5.4,.7,circ(900,1180,60,YELLOW)+[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return line(900+Math.cos(a)*84,1180+Math.sin(a)*84,900+Math.cos(a)*112,1180+Math.sin(a)*112,'stroke-width="7"')}).join(''),{mode:'pop'});
+sc.g(5.6,.6,person({shirt:NAVY,glasses:1,tie:1,hair:'#3a2a20',arms:'cheer',face:'open'}),{x:340,y:1370,s:.88,mode:'pop',bob:5});
+sc.g(6.0,.6,person({shirt:ORANGE,style:'boss',hair:'#777',tie:1,arms:'cheer',face:'open'}),{x:720,y:1390,s:.82,mode:'pop',bob:5});
+sc.g(6.5,.6,sparkle(540,1260,40)+sparkle(110,1250,28,PINK)+sparkle(540,1520,24,BLUE)+heart(540,1380,.5,'#ffb3c6'),{mode:'pop'});
+sc.t(7.4,1740,'それが、私の事務所づくり。',66,INK,{dur:1.0});
+
+window.TOTAL=cum;
+render(0);
+</script>
+</body>
+</html>
