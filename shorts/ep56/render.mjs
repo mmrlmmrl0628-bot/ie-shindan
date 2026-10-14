@@ -15,6 +15,7 @@ if (ats) { const p = await open(); for (const t of ats) await shot(p, t, `${out}
 else {
   const p0 = await open(); const total = await p0.evaluate(() => TOTAL); const n = Math.ceil(total * fps);
   console.log('total', total, 'frames', n);
+  fs.writeFileSync(dir + '/starts.json', JSON.stringify(await p0.evaluate(() => STARTS)));
   const pages = [p0]; for (let i = 1; i < par; i++) pages.push(await open());
   await Promise.all(pages.map(async (p, k) => { for (let i = k; i < n; i += par) await shot(p, i / fps, `${out}/${String(i).padStart(5, '0')}.jpg`); }));
 }

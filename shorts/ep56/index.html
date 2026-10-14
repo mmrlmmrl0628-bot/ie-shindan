@@ -20,6 +20,7 @@
 </head>
 <body>
 <div id="stage"><div id="bar"></div></div>
+<script src="narr.js"></script>
 <script>
 const NS='http://www.w3.org/2000/svg';
 const stage=document.getElementById('stage');
@@ -92,7 +93,8 @@ function scene(dur){
   const el=document.createElement('div');el.className='scene';
   const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 1080 1920');el.appendChild(svg);
   stage.insertBefore(el,bar);
-  const sc={dur,start:cum,el,svg,items:[]};cum+=dur;scenes.push(sc);
+  const k=Math.max(1,((window.NARR||[])[scenes.length]+0.9||0)/dur);dur*=k;
+  const sc={dur,k,start:cum,el,svg,items:[]};cum+=dur;scenes.push(sc);
   sc.t=(at,y,html,size,color=INK,o={})=>T(sc,at,y,html,size,color,o);
   sc.g=(at,dur,svgStr,o={})=>G(sc,at,dur,svgStr,o);
   return sc;
@@ -152,7 +154,7 @@ function render(t){
     if(!vis)return;
     const ts=t-sc.start;
     sc.el.style.opacity=clamp(Math.min(ts/.12,(sc.dur-ts)/.35));
-    sc.items.forEach(f=>f(ts));
+    sc.items.forEach(f=>f(ts/sc.k));
   });
   bar.style.width=(t/cum*1080)+'px';
 }
@@ -341,7 +343,7 @@ sc.g(6.0,.6,person({shirt:ORANGE,style:'boss',hair:'#777',tie:1,arms:'cheer',fac
 sc.g(6.5,.6,sparkle(540,1260,40)+sparkle(110,1250,28,PINK)+sparkle(540,1520,24,BLUE)+heart(540,1380,.5,'#ffb3c6'),{mode:'pop'});
 sc.t(7.4,1740,'それが、私の事務所づくり。',66,INK,{dur:1.0});
 
-window.TOTAL=cum;
+window.TOTAL=cum;window.STARTS=scenes.map(s=>s.start);
 render(0);
 </script>
 </body>
